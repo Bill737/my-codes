@@ -1,0 +1,60 @@
+﻿# Raspberry Pi GPIO 12 buzzer PWM playback for Xiao Mi Feng melody
+import time
+import RPi.GPIO as GPIO
+
+BZ = 12
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(BZ, GPIO.OUT)
+
+pwm = GPIO.PWM(BZ, 440)
+pwm.start(0)
+
+notes = {
+    'Do': 523,
+    'Re': 587,
+    'Mi': 659,
+    'Fa': 698,
+    'So': 784,
+    'La': 880,
+    'Si': 988,
+    'Rest': 0,
+}
+
+melody = [
+    'Mi', 'Mi', 'So', 'So', 'La', 'La', 'So',
+    'Fa', 'Fa', 'Mi', 'Mi', 'Re', 'Re', 'Do',
+    'Mi', 'Mi', 'So', 'So', 'La', 'La', 'So',
+    'Fa', 'Fa', 'Mi', 'Mi', 'Re', 'Re', 'Do',
+]
+
+
+duration = 0.3
+pause = 0.05
+
+
+def play_note(note_name, duration=0.3, duty=50):
+    frequency = notes.get(note_name)
+    if frequency is None:
+        raise ValueError(f"Unknown note: {note_name}")
+    if frequency == 0:
+        pwm.ChangeDutyCycle(0)
+        time.sleep(duration)
+        return
+    pwm.ChangeFrequency(frequency)
+    pwm.ChangeDutyCycle(duty)
+    time.sleep(duration)
+    pwm.ChangeDutyCycle(0)
+
+
+if __name__ == '__main__':
+    try:
+        print('Playing Xiao Mi Feng on GPIO 12...')
+        for note in melody:
+            print(f'Playing {note}')
+            play_note(note, duration, duty=50)
+            time.sleep(pause)
+    except KeyboardInterrupt:
+        print('\nInterrupted by user.')
+    finally:
+        pwm.stop()
+        GPIO.cleanup()

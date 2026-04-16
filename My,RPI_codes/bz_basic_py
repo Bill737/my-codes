@@ -1,0 +1,42 @@
+# 使用 Raspberry pi 的GPIO 12 連接一個 Buzzer , 通過pwm方式控制 Buzzer 發出 Do,Re,Mi,Fa,So,La,Si
+import time
+
+import RPi.GPIO as GPIO
+
+BZ = 12
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(BZ, GPIO.OUT)
+
+PWM = GPIO.PWM(BZ, 50)
+
+notes = {
+    'Do': 523,
+    'Re': 587,
+    'Mi': 659,
+    'Fa': 698,
+    'So': 784,
+    'La': 880,
+    'Si': 988,
+}
+
+def play_note(note_name, duration=0.5):
+    """Play a musical note for a specified duration."""
+    frequency = notes.get(note_name)
+    pwm.ChangeFrequency(frequency)
+    pwm.start(50)
+    time.sleep(duration)
+    pwm.stop()
+    time.sleep(0.1)
+
+
+
+    try:
+       pwm.start(0)
+
+       for note in notes.keys():
+        print(f"Playing{notes}")
+        play_note(note)
+
+    finally:
+        pwm.stop()
+        GPIO.cleanup()
