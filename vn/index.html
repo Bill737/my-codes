@@ -481,6 +481,61 @@ body {
   text-align: center;
 }
 
+.ending-visual {
+  position: relative;
+  height: clamp(260px, 42vh, 380px);
+  margin: 20px 0 18px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,.85);
+  border-radius: 22px;
+  background-color: #d8d6df;
+  background-size: cover;
+  background-position: center;
+  box-shadow: 0 14px 34px rgba(36,48,74,.14);
+}
+.ending-visual::before {
+  content: "";
+  position: absolute;
+  inset: 35% 0 0;
+  z-index: 1;
+  background: linear-gradient(180deg, transparent, rgba(27,34,54,.2));
+  pointer-events: none;
+}
+.ending-visual[data-scene="rainy"] { background-image: url('scene-rainy-corridor.png'); }
+.ending-visual[data-scene="rooftop"] { background-image: url('scene-rooftop.png'); }
+.ending-visual[data-scene="club"] { background-image: url('scene-music-club.png'); }
+.ending-visual[data-scene="festival"] { background-image: url('scene-festival-eve.png'); }
+.ending-visual[data-scene="classroom"] { background-image: url('scene-music-room.png'); }
+.ending-visual img {
+  position: absolute;
+  z-index: 2;
+  right: 8%;
+  bottom: -3%;
+  height: 106%;
+  max-width: 82%;
+  object-fit: contain;
+  object-position: bottom;
+  filter: drop-shadow(0 8px 12px rgba(28,34,50,.2));
+}
+.ending-seal {
+  position: absolute;
+  z-index: 3;
+  left: 16px;
+  bottom: 16px;
+  display: grid;
+  width: 54px;
+  height: 54px;
+  place-items: center;
+  border: 1px solid rgba(255,255,255,.65);
+  border-radius: 50%;
+  background: rgba(255,255,255,.84);
+  box-shadow: 0 4px 16px rgba(36,48,74,.14);
+  font-size: 29px;
+  backdrop-filter: blur(8px);
+}
+.ending[data-ending="bad"] .ending-visual { box-shadow: 0 14px 34px rgba(130,43,55,.2); }
+.ending[data-ending="romance"] .ending-visual { box-shadow: 0 14px 34px rgba(214,88,130,.2); }
+
 .start h1, .ending h1 {
   font-size: clamp(32px, 5vw, 46px);
   margin: 14px 0;
@@ -629,7 +684,10 @@ body {
     </section>
 
     <section id="ending" class="ending hidden">
-      <div class="emblem" id="endIcon">🌙</div>
+      <div class="ending-visual" id="endingVisual" data-scene="classroom">
+        <img id="endArt" src="aimesi-relieved.png" alt="愛彌斯的結局插畫">
+        <span class="ending-seal" id="endIcon">🌙</span>
+      </div>
       <div class="badge">故事完結</div>
       <h1 id="endTitle"></h1>
       <p id="endText"></p>
@@ -841,6 +899,9 @@ function finish() {
   if (anger >= 4) {
     e = {
       icon: '💔',
+      scene: 'rainy',
+      art: 'aimesi-angry.png',
+      artAlt: '愛彌斯在雨中的失落表情',
       title: '最後的空白譜頁',
       text: '幾次冷淡的回應讓愛彌斯不再向你求助。校園祭演出仍然完成了，但那首歌沒有唱給你聽。散場後，她把譜頁收進資料夾，你們回到了普通同學的距離。',
       line: '「謝謝你曾經幫忙。之後……我們就先到這裡吧。」'
@@ -848,6 +909,9 @@ function finish() {
   } else if (love >= 8 && trust >= 5) {
     e = {
       icon: '💖',
+      scene: 'rooftop',
+      art: 'aimesi-shy.png',
+      artAlt: '愛彌斯在星光下害羞微笑',
       title: '星光下的告白',
       text: '愛彌斯笑著點頭。她告訴你，那首歌記錄了從音樂教室到天台的每一段回憶。你們約好明天一起上學，讓這段故事繼續寫下去。',
       line: '「明天早上，等我一起走吧。」'
@@ -855,6 +919,9 @@ function finish() {
   } else if (trust >= 7) {
     e = {
       icon: '🎶',
+      scene: 'club',
+      art: 'aimesi-happy.png',
+      artAlt: '愛彌斯在音樂社開心微笑',
       title: '我們的社團',
       text: '你們沒有急著替關係命名，卻成了彼此最可靠的朋友。音樂社順利留下來，大家也約好下次一起出遊。',
       line: '「有你們在，這首歌才完整。」'
@@ -862,6 +929,9 @@ function finish() {
   } else if (trust >= 3 || love >= 4) {
     e = {
       icon: '🌱',
+      scene: 'festival',
+      art: 'aimesi-determined.png',
+      artAlt: '愛彌斯在校園祭前夜堅定迎向舞台',
       title: '新的旋律',
       text: '校園祭順利落幕。愛彌斯帶著你的鼓勵繼續往前，而你們也各自找到新的方向。那些一起練習的午後，成了珍貴的回憶。',
       line: '「下次有空，再一起聽歌吧。」'
@@ -869,6 +939,9 @@ function finish() {
   } else {
     e = {
       icon: '🌙',
+      scene: 'classroom',
+      art: 'aimesi-relieved.png',
+      artAlt: '愛彌斯在放學後的音樂教室露出安心的微笑',
       title: '散場以後',
       text: '演出結束，人群漸漸散去。你們把想說的話留在了心裡。幾天後，音樂教室的桌上多了一張寫著謝謝的便條。',
       line: '「那天你來過，我一直記得。」'
@@ -877,6 +950,10 @@ function finish() {
   
   $('game').classList.add('hidden');
   $('ending').classList.remove('hidden');
+  $('ending').dataset.ending = anger >= 4 ? 'bad' : love >= 8 && trust >= 5 ? 'romance' : trust >= 7 ? 'friendship' : 'quiet';
+  $('endingVisual').dataset.scene = e.scene;
+  $('endArt').src = e.art;
+  $('endArt').alt = e.artAlt;
   $('endIcon').textContent = e.icon;
   $('endTitle').textContent = e.title;
   $('endText').textContent = e.text;
