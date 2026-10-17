@@ -1,0 +1,799 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>放學後，和你一起 - 校園場景與多表情版</title>
+<style>
+:root {
+  --ink: #202838;
+  --muted: #647087;
+  --pink: #e889a7;
+  --blue: #7ca3d2;
+  --cream: #fffaf5;
+  --line: #ebdcd6;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  color: var(--ink);
+  font-family: ui-rounded, "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+  background: radial-gradient(ellipse at 15% 15%, #ffeacc 0, transparent 40%),
+              radial-gradient(ellipse at 85% 10%, #d5e5fb 0, transparent 40%),
+              linear-gradient(145deg, #f2dcd3, #cfdaf0);
+  display: grid;
+  place-items: center;
+  padding: 20px;
+}
+
+.shell {
+  width: min(1000px, 100%);
+  min-height: 660px;
+  background: rgba(255, 250, 245, 0.96);
+  border: 1px solid #ffffff;
+  border-radius: 28px;
+  box-shadow: 0 25px 70px rgba(45, 55, 80, 0.18);
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: 290px 1fr;
+  position: relative;
+}
+
+.side {
+  padding: 30px 24px;
+  background: linear-gradient(160deg, #f5d4df, #e1e7f7);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  border-right: 1px solid rgba(255,255,255,0.6);
+}
+
+.side::after {
+  content: '♪';
+  font-size: 260px;
+  position: absolute;
+  bottom: -95px;
+  right: -30px;
+  color: rgba(255, 255, 255, 0.28);
+  transform: rotate(-18deg);
+  pointer-events: none;
+}
+
+.badge {
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  color: #835267;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.logo {
+  font-size: 32px;
+  line-height: 1.2;
+  margin: 14px 0 8px;
+  font-weight: 900;
+  background: linear-gradient(135deg, #422b39, #8c4c68);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.sub {
+  color: #61667d;
+  font-size: 13.5px;
+  line-height: 1.7;
+}
+
+.portrait-card {
+  margin: auto auto 0;
+  width: 190px;
+  height: 220px;
+  border-radius: 95px 95px 28px 28px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.9), rgba(255,255,255,0.4)),
+              linear-gradient(140deg, #f3a0b5, #8eb2e2);
+  display: grid;
+  place-items: center;
+  box-shadow: inset 0 0 0 8px rgba(255,255,255,0.65), 0 10px 25px rgba(0,0,0,0.08);
+  z-index: 1;
+  overflow: hidden;
+  position: relative;
+}
+
+.portrait-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  mix-blend-mode: normal;
+}
+
+.side-note {
+  z-index: 1;
+  font-size: 12px;
+  color: #5c6882;
+  margin-top: 14px;
+  text-align: center;
+  font-weight: 700;
+}
+
+.main {
+  padding: 32px 38px;
+  display: flex;
+  flex-direction: column;
+  min-height: 660px;
+  position: relative;
+}
+
+.top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.chapter {
+  font-size: 13px;
+  color: #8c5d70;
+  letter-spacing: 0.14em;
+  font-weight: 800;
+}
+
+.stats { display: flex; gap: 10px; }
+
+.pill {
+  font-size: 12px;
+  border-radius: 99px;
+  background: #fff;
+  padding: 8px 14px;
+  color: #5d6075;
+  box-shadow: 0 3px 10px rgba(36, 48, 74, 0.06);
+  border: 1px solid #f0e6e4;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.pill b { color: #d65882; font-size: 14px; }
+.anger-pill { color: #92565d; background: #fff7f5; border-color: #f0d5d3; transition: background 0.25s ease, border-color 0.25s ease; }
+.anger-pill b { color: #b4434d; }
+.anger-pill.is-angry { background: #ffe8e5; border-color: #eaa8a3; box-shadow: 0 3px 12px rgba(190, 67, 77, 0.12); }
+
+.scene-title {
+  margin-top: 20px;
+  color: #927e79;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.stage {
+  font-size: clamp(20px, 2.5vw, 25px);
+  font-weight: 800;
+  line-height: 1.4;
+  margin: 6px 0 14px;
+  color: #2c3547;
+}
+
+.visual {
+  height: 230px;
+  border-radius: 20px;
+  position: relative;
+  overflow: hidden;
+  margin: 4px 0 16px;
+  background-color: #d5c2b5;
+  background-image: url('scene-music-room.png');
+  background-size: cover;
+  background-position: center;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.7), 0 8px 20px rgba(0,0,0,0.06);
+  transition: filter 0.6s ease;
+}
+
+.visual::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(25,31,48,0.02), rgba(25,31,48,0.12));
+  z-index: 2;
+  pointer-events: none;
+}
+
+.visual[data-scene="音樂社"] { background-image: url('scene-music-club.png'); }
+.visual[data-scene="雨天"] { background-image: url('scene-rainy-corridor.png'); }
+.visual[data-scene="校園中庭"] { background-image: url('scene-courtyard.png'); }
+.visual[data-scene="校園祭前夜"] { background-image: url('scene-festival-eve.png'); }
+.visual[data-scene="天台"] { background-image: url('scene-rooftop.png'); }
+.visual .sun, .visual .school-building { display: none; }
+
+/* 角色立繪與表情區 */
+.character {
+  position: absolute;
+  z-index: 3;
+  right: 6%;
+  bottom: -5px;
+  width: 200px;
+  height: 230px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  transition: transform 0.3s ease;
+}
+
+.character img {
+  height: 230px;
+  max-width: 100%;
+  object-fit: contain;
+  mix-blend-mode: normal;
+  filter: drop-shadow(0 8px 12px rgba(30, 40, 60, 0.25));
+  animation: breathing 3.5s ease-in-out infinite;
+}
+
+@keyframes breathing {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-4px) scale(1.01); }
+}
+
+/* 表情反應氣泡與特效 */
+.reaction-icon {
+  position: absolute;
+  z-index: 6;
+  top: -12px;
+  left: 50%;
+  font-size: 38px;
+  line-height: 1;
+  opacity: 0;
+  transform: translate(-50%, 10px) scale(0.5);
+  pointer-events: none;
+  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.15));
+}
+
+.character[data-emotion="shy"] .reaction-icon,
+.character[data-emotion="angry"] .reaction-icon,
+.character[data-emotion="happy"] .reaction-icon,
+.character[data-emotion="touched"] .reaction-icon,
+.character[data-emotion="surprised"] .reaction-icon,
+.character[data-emotion="worried"] .reaction-icon,
+.character[data-emotion="determined"] .reaction-icon,
+.character[data-emotion="confused"] .reaction-icon,
+.character[data-emotion="relieved"] .reaction-icon,
+.character[data-emotion="tired"] .reaction-icon {
+  opacity: 1;
+  animation: popReaction 0.45s cubic-bezier(0.18, 1.5, 0.4, 1) forwards;
+}
+
+/* 臉紅疊加層 */
+.blush-overlay {
+  position: absolute;
+  z-index: 4;
+  left: 20%;
+  top: 22%;
+  width: 60%;
+  height: 20%;
+  opacity: 0;
+  background: radial-gradient(ellipse at 30% 50%, rgba(245, 90, 120, 0.65) 0, transparent 45%),
+              radial-gradient(ellipse at 70% 50%, rgba(245, 90, 120, 0.65) 0, transparent 45%);
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.character[data-emotion="shy"] .blush-overlay,
+.character[data-emotion="worried"] .blush-overlay { opacity: 1; }
+
+/* 各情緒動態效果 */
+.character[data-emotion="angry"] { animation: shake 0.4s ease-in-out 2; }
+.character[data-emotion="happy"] { animation: happyHop 0.55s ease-in-out 2; }
+.character[data-emotion="shy"] { animation: shySway 1s ease-in-out 2; }
+.character[data-emotion="touched"], .character[data-emotion="relieved"] { animation: touchedMove 0.6s ease both; }
+.character[data-emotion="surprised"] { animation: surprisedPop 0.45s ease-out 1; }
+.character[data-emotion="worried"] { animation: worriedSway 0.85s ease-in-out 2; }
+.character[data-emotion="determined"] { animation: determinedNod 0.55s ease-in-out 2; }
+.character[data-emotion="confused"] { animation: confusedTilt 0.65s ease-in-out 2; }
+.character[data-emotion="tired"] { animation: tiredDroop 1.2s ease-in-out 1; }
+
+@keyframes popReaction {
+  to { opacity: 1; transform: translate(-50%, -22px) scale(1.15); }
+}
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+@keyframes happyHop {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
+}
+@keyframes shySway {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(2.5deg) scale(1.02); }
+}
+@keyframes touchedMove {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+  100% { transform: translateY(0); }
+}
+@keyframes surprisedPop {
+  0% { transform: scale(0.97); }
+  60% { transform: scale(1.045); }
+  100% { transform: scale(1); }
+}
+@keyframes worriedSway {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(-3px) rotate(-1deg); }
+}
+@keyframes determinedNod {
+  0%, 100% { transform: translateY(0); }
+  45% { transform: translateY(-5px); }
+}
+@keyframes confusedTilt {
+  0%, 100% { transform: rotate(0); }
+  50% { transform: rotate(-2deg); }
+}
+@keyframes tiredDroop {
+  0%, 100% { transform: translateY(0); }
+  45% { transform: translateY(3px); }
+}
+
+.dialogue {
+  min-height: 195px;
+  padding: 22px 26px;
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(50, 37, 26, 0.06);
+  position: relative;
+}
+
+.speaker {
+  font-weight: 800;
+  color: #c95d82;
+  font-size: 16px;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.speaker::before {
+  content: "";
+  display: inline-block;
+  width: 4px;
+  height: 16px;
+  background: #c95d82;
+  border-radius: 2px;
+}
+
+.line {
+  font-size: 16.5px;
+  line-height: 1.85;
+  color: #2d3748;
+  white-space: pre-line;
+}
+
+.prompt {
+  margin: 12px 2px 0;
+  font-weight: 800;
+  color: #826274;
+  font-size: 14px;
+}
+
+.choices {
+  display: grid;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.choice {
+  border: 1px solid #ebd9de;
+  background: #fffdfb;
+  padding: 13px 18px;
+  border-radius: 14px;
+  text-align: left;
+  color: var(--ink);
+  font: inherit;
+  font-size: 15px;
+  line-height: 1.5;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.choice:hover {
+  transform: translateY(-2px);
+  border-color: #e392aa;
+  background: #fff5f8;
+  box-shadow: 0 8px 18px rgba(208, 123, 145, 0.15);
+}
+
+.footer {
+  margin-top: auto;
+  padding-top: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: #938c95;
+  font-size: 12px;
+}
+
+.btn {
+  border: 0;
+  background: #252e42;
+  color: white;
+  padding: 12px 22px;
+  border-radius: 99px;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(37, 46, 66, 0.2);
+  transition: all 0.2s ease;
+}
+
+.btn:hover {
+  background: #3c4a66;
+  transform: translateY(-1px);
+}
+
+.start, .ending {
+  margin: auto;
+  max-width: 580px;
+  text-align: center;
+}
+
+.start h1, .ending h1 {
+  font-size: clamp(32px, 5vw, 46px);
+  margin: 14px 0;
+  font-weight: 900;
+  color: #263044;
+}
+
+.start p, .ending p {
+  line-height: 1.9;
+  color: #5c6275;
+  font-size: 16px;
+}
+
+.emblem { font-size: 64px; }
+.hidden { display: none !important; }
+
+@media (max-width: 760px) {
+  body {
+    display: block;
+    min-height: 100svh;
+    padding: 0;
+    background: var(--cream);
+  }
+  .shell {
+    width: 100%;
+    min-height: 100svh;
+    grid-template-columns: minmax(0, 1fr);
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+  .side { display: none; }
+  .main {
+    min-height: 100svh;
+    padding: 22px clamp(14px, 4vw, 28px) 28px;
+  }
+  .top { align-items: flex-start; }
+  .stats { flex-wrap: wrap; justify-content: flex-end; gap: 6px; }
+  .pill { padding: 7px 9px; font-size: 11px; }
+  .visual { height: clamp(195px, 36vh, 270px); margin-bottom: 14px; }
+  .character { width: min(42vw, 190px); height: 100%; right: 2%; bottom: -5px; }
+  .character img { height: 100%; max-width: 100%; }
+  .dialogue { min-height: 0; padding: 18px; }
+  .line { font-size: 16px; line-height: 1.75; }
+  .choice { padding: 12px 14px; font-size: 14px; }
+  .footer { gap: 12px; }
+  .footer span { max-width: 58%; line-height: 1.5; }
+  .start, .ending { padding: 34px 8px; }
+}
+
+@media (max-width: 420px) {
+  .main { padding: 18px 12px 24px; }
+  .top { display: grid; grid-template-columns: 1fr; gap: 10px; }
+  .stats { justify-content: flex-start; }
+  .visual { height: 210px; }
+  .character { width: 55%; max-width: 190px; }
+  .stage { font-size: 21px; }
+  .choices { gap: 8px; }
+  .choice { padding: 11px 12px; }
+  .btn { padding: 11px 17px; }
+}
+
+</style>
+</head>
+<body>
+
+<div class="shell">
+  <aside class="side">
+    <div class="badge">INTERACTIVE STORY · 校園戀愛</div>
+    <div class="logo">放學後，<br>和你一起</div>
+    <div class="sub">一段從音樂教室開始的校園故事。<br>友情、心動，還有那首未完成的歌。</div>
+    <div class="portrait-card">
+      <img id="sideArt" src="aimesi-touched.png" alt="愛彌斯" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'100\' height=\'100\' viewBox=\'0 0 100 100\'><text x=\'50%\' y=\'50%\' font-size=\'40\' text-anchor=\'middle\' dy=\'.3em\'>🌸</text></svg>'">
+    </div>
+    <div class="side-note">愛彌斯 · 星見高中音樂社</div>
+  </aside>
+
+  <main class="main">
+    <section id="start" class="start">
+      <div class="emblem">🌇 🎼</div>
+      <div class="badge">星見高中 · 初夏</div>
+      <h1>放學後，和你一起</h1>
+      <p>轉學生愛彌斯加入了快要解散的音樂社。<br>從一次放學後的相遇開始，陪她完成校園祭演出，<br>也慢慢找到你們之間最珍惜的關係。</p>
+      <button class="btn" id="begin" style="margin-top: 24px;">開始故事</button>
+    </section>
+
+    <section id="game" class="hidden">
+      <div class="top">
+        <div class="chapter" id="chapter">第一章 · 窗邊的相遇</div>
+        <div class="stats">
+          <div class="pill">🤝 信任 <b id="trust">0</b></div>
+          <div class="pill">💗 心動 <b id="love">0</b></div>
+          <div class="pill anger-pill">😠 怒氣 <b id="anger">0</b></div>
+        </div>
+      </div>
+
+      <div class="scene-title" id="scene">放學後 · 音樂教室</div>
+      <div class="stage" id="stage">夕陽落在散開的樂譜上。</div>
+
+      <div class="visual" id="visual" data-scene="音樂教室">
+        <div class="sun"></div>
+        <div class="school-building"></div>
+
+        <div class="character" id="character" data-emotion="idle">
+          <img id="characterArt" src="aimesi-touched.png" alt="愛彌斯" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'120\' height=\'180\' viewBox=\'0 0 120 180\'><text x=\'50%\' y=\'50%\' font-size=\'60\' text-anchor=\'middle\' dy=\'.3em\'>👩‍🎤</text></svg>'">
+          <div class="blush-overlay"></div>
+          <div class="reaction-icon" id="reactionIcon"></div>
+        </div>
+      </div>
+
+      <div class="dialogue">
+        <div class="speaker" id="speaker">愛彌斯</div>
+        <div class="line" id="line">...</div>
+      </div>
+
+      <div class="prompt" id="prompt">你會怎麼回應？</div>
+      <div class="choices" id="choices"></div>
+
+      <div class="footer">
+        <span>選擇會影響你們走向哪個結局</span>
+        <button class="btn hidden" id="next">繼續 →</button>
+      </div>
+    </section>
+
+    <section id="ending" class="ending hidden">
+      <div class="emblem" id="endIcon">🌙</div>
+      <div class="badge">故事完結</div>
+      <h1 id="endTitle"></h1>
+      <p id="endText"></p>
+      <p id="endLine" style="color: #c95d82; font-weight: 800; margin-top: 14px;"></p>
+      <button class="btn" id="restart" style="margin-top: 24px;">重新開始</button>
+    </section>
+  </main>
+</div>
+
+<script>
+const chapters = [
+  { chapter: '第一章 · 窗邊的相遇', scene: '放學後 · 音樂教室', stage: '夕陽落在散開的樂譜上。', speaker: '愛彌斯', line: '「你也還沒回家呀？要不要一起走？我想去福利社買點東西。」她把譜紙收好，朝你露出輕鬆的笑。' },
+  { chapter: '第二章 · 一起練習吧', scene: '一週後 · 音樂社', stage: '空蕩蕩的社辦，貼著校園祭招募海報。', speaker: '愛彌斯', line: '「社團人數不夠，可能會被合併……不過我想試著辦一次演出。你願意來幫忙嗎？」' },
+  { chapter: '第三章 · 雨天的約定', scene: '傍晚 · 校舍走廊', stage: '雨聲把校園包進一層柔軟的寧靜。', speaker: '愛彌斯', line: '「我有點怕演砸了。大家都這麼努力，要是因為我出錯……」她低頭捏著譜角。' },
+  { chapter: '第四章 · 友情的距離', scene: '午休 · 校園中庭', stage: '忙碌的準備讓每個人都忘了停下腳步。', speaker: '愛彌斯', line: '「最近你好像也很累。你總是在幫我，有沒有什麼事也想跟我說？」' },
+  { chapter: '第五章 · 還沒完成的歌', scene: '校園祭前夜 · 音樂教室', stage: '重要的樂譜不見了，只剩空白的譜架。', speaker: '愛彌斯', line: '「那是我寫給一個很重要的人的歌……現在找不到了。」她努力鎮定，眼眶卻有些泛紅。' },
+  { chapter: '第六章 · 校園祭之夜', scene: '夜晚 · 天台', stage: '歌聲落下，星光亮起。', speaker: '愛彌斯', line: '「謝謝你陪我走到這裡。這首歌……其實是寫給一直在我身邊的人。」她看著你，像在等待一個答案。' }
+];
+
+const questionPools = [
+  [
+    { question: '她邀你一起去福利社，你會怎麼回應？', choices: [['「好啊，路上妳可以跟我說說最近在忙什麼。」', 'trust', 1], ['「當然，能和妳一起走我很開心。」', 'love', 1], ['「等等我，我先幫妳把樂譜收好再走。」', 'both', 1]] },
+    { question: '看到她整理到很晚，你想怎麼做？', choices: [['問她今天過得如何，耐心聽她分享。', 'trust', 1], ['笑著邀她一起去買點心，順便多聊一會兒。', 'love', 1], ['幫她收好樂譜，再一起去福利社。', 'both', 1]] }
+  ],
+  [
+    { question: '音樂社可能被合併，她邀你幫忙，你會怎麼做？', choices: [['答應加入，和她一起把演出練好。', 'trust', 1], ['說只要能和她一起準備，自己很樂意。', 'love', 1], ['提出宣傳計畫，也邀同學來幫忙。', 'both', 1]] },
+    { question: '校園祭的準備才剛開始，你會先做什麼？', choices: [['陪她排練，讓她知道有人可以依靠。', 'trust', 1], ['邀她一起挑演出曲目，享受兩人相處的時間。', 'love', 1], ['分工安排並找同學支援社團。', 'both', 1]] }
+  ],
+  [
+    { question: '雨聲中她說自己害怕演出失誤，你會怎麼回應？', choices: [['告訴她不必獨自承擔，陪她慢慢練習。', 'love', 1], ['提議和社團夥伴一起調整演出安排。', 'trust', 2], ['先陪她休息，等她準備好再一起想辦法。', 'both', 1]] },
+    { question: '她低頭捏著譜角，似乎很不安，你會怎麼做？', choices: [['坐在她身旁，陪她把最擔心的地方練熟。', 'love', 1], ['問她希望大家怎麼分工，再一起討論。', 'trust', 2]] }
+  ],
+  [
+    { question: '她看出你最近很累，問你有沒有煩惱，你會？', choices: [['坦白說課業和社團讓自己有點吃不消。', 'trust', 2], ['告訴她和她相處時，自己總能放鬆一些。', 'love', 1], ['提議大家一起吃午餐，互相分享近況。', 'both', 1]] },
+    { question: '午休時間終於空下來，你想和她聊什麼？', choices: [['說說自己的近況，也問她最近還好嗎。', 'trust', 2], ['邀她週末一起去逛唱片行。', 'love', 1]] }
+  ],
+  [
+    { question: '演出前夜，重要樂譜不見了，你會先做什麼？', choices: [['陪她回想寫歌的過程，一起重新整理旋律。', 'love', 2], ['和社團夥伴分頭搜尋，確認每個可能放置的地方。', 'trust', 2], ['先安慰她，再一起決定方案。', 'both', 1]] }
+  ],
+  [
+    { question: '演出後她說那首歌寫給重要的人，你想怎麼回答？', choices: [['問她願不願意讓自己成為往後陪伴她的人。', 'love', 2], ['答應不論友情或音樂社遇到什麼都一起面對。', 'trust', 2], ['坦白說自己喜歡她，並尊重她的回答。', 'confess', 0]] },
+    { question: '天台上只剩你們兩人，你想對她說什麼？', choices: [['「我喜歡妳，想和妳一起迎接下一個明天。」', 'confess', 0], ['「以後社團的每場演出，我都會陪大家一起準備。」', 'trust', 2], ['「這段時間和妳在一起，對我來說很特別。」', 'love', 2]] }
+  ]
+];
+
+let index = 0, trust = 0, love = 0, anger = 0;
+const $ = id => document.getElementById(id);
+
+function updateStats() {
+  $('trust').textContent = trust;
+  $('love').textContent = love;
+  $('anger').textContent = anger;
+  $('anger').closest('.pill').classList.toggle('is-angry', anger >= 3);
+}
+
+function resolveEmotion(chapterIndex, type) {
+  if (type === 'cold' || anger >= 3) return 'angry';
+  if (anger >= 2) return 'worried';
+  const byChapter = [
+    { trust: 'relieved', love: 'shy', both: 'happy' },
+    { trust: 'determined', love: 'happy', both: 'surprised' },
+    { trust: 'determined', love: 'relieved', both: 'relieved' },
+    { trust: 'tired', love: 'shy', both: 'relieved' },
+    { trust: 'determined', love: 'confused', both: 'worried' },
+    { trust: 'happy', love: 'touched', confess: 'shy' }
+  ];
+  return (byChapter[chapterIndex] && byChapter[chapterIndex][type]) || 'touched';
+}
+
+function showChapter() {
+  const c = chapters[index];
+  const round = questionPools[index][Math.floor(Math.random() * questionPools[index].length)];
+  
+  $("prompt").textContent = round.question;
+  const coldReplies = [
+    '「我趕時間，妳自己去吧。」',
+    '「社團的事妳自己處理，我不想管。」',
+    '「別把小事想得那麼嚴重。」',
+    '「不要一直把你的煩惱丟給我。」',
+    '「只是一張樂譜，沒必要這麼在意。」',
+    '「別把這首歌說得像告白一樣。」'
+  ];
+  c.choices = [...round.choices, [coldReplies[index], 'cold', -1]];
+  
+  $('character').dataset.emotion = 'idle';
+  $('characterArt').src = 'aimesi-touched.png';
+  $('sideArt').src = 'aimesi-touched.png';
+  $('reactionIcon').textContent = '';
+  
+  const place = index === 2 ? "雨天" : index === 3 ? "校園中庭" : index === 4 ? "校園祭前夜" : index === 5 ? "天台" : index === 1 ? "音樂社" : "音樂教室";
+  $("visual").dataset.scene = place;
+  
+  $('chapter').textContent = c.chapter;
+  $('scene').textContent = c.scene;
+  $('stage').textContent = c.stage;
+  $('speaker').textContent = c.speaker;
+  $('line').textContent = c.line;
+  
+  $('choices').innerHTML = '';
+  $('next').classList.add('hidden');
+  
+  c.choices.forEach(([label, type, val]) => {
+    const b = document.createElement('button');
+    b.className = 'choice';
+    b.textContent = label;
+    b.onclick = () => choose(type, val, label);
+    $('choices').appendChild(b);
+  });
+  
+  updateStats();
+}
+
+function choose(type, val, label) {
+  if (type === 'cold') {
+    trust += val;
+    anger = Math.min(6, anger + 2);
+  } else {
+    if (type === 'trust') trust += val;
+    if (type === 'love') love += val;
+    if (type === 'both') { trust += val; love += val; }
+    if (type === 'confess') { love += 2; trust += 1; }
+    anger = Math.max(0, anger - 1);
+  }
+  
+  updateStats();
+  
+  // 決定表情、反應圖示與對應語句
+  const emotion = resolveEmotion(index, type);
+  const icon = {
+    angry: '😠', shy: '💗', happy: '✨', touched: '🥹',
+    surprised: '❕', worried: '☁️', determined: '⭐',
+    confused: '❔', relieved: '🍃', tired: '💤'
+  }[emotion];
+  const reactionCopy = {
+    angry: ['她鼓起臉頰，有些不高興地看著你。', '「你怎麼這樣說……我是真的很重視這件事耶。」'],
+    shy: ['她的臉頰泛起紅暈，眼神有些害羞地避開。', '「你、你突然說這個……我的臉一定很紅吧。」'],
+    happy: ['她眼睛一亮，露出燦爛的笑容。', '「有你陪著我，感覺什麼困難都能解決了！」'],
+    touched: ['她把手輕按在胸口，眼中流露出感動。', '「謝謝你一直這麼懂我，有你在真好。」'],
+    surprised: ['她有些意外地睜大眼睛，隨即笑了起來。', '「真的嗎？有你一起幫忙，我好像更有信心了！」'],
+    worried: ['她仍有些不安，雙手輕輕握在胸前。', '「我還是有一點擔心……不過我們可以一起想辦法。」'],
+    determined: ['她收起猶豫，眼神重新堅定起來。', '「好，我們就一步一步把事情準備好。」'],
+    confused: ['她微微歪頭，像在腦中重新拼起那段旋律。', '「等一下……這段旋律，我好像想起來了。」'],
+    relieved: ['她放鬆肩膀，露出安心的笑。', '「呼，能一起分擔，真的讓我安心很多。」'],
+    tired: ['她看出你也累了，神情變得柔和。', '「謝謝你願意告訴我。接下來也讓我陪陪你吧。」']
+  };
+  let [reactionStage, reactionLine] = reactionCopy[emotion];
+  if (emotion === 'angry' && type !== 'cold') {
+    reactionStage = '她還帶著怒氣，沒有立刻接受你的解釋。';
+    reactionLine = '「我還沒辦法當作沒事……請先聽我把話說完。」';
+  }
+  
+  $('character').dataset.emotion = emotion;
+  $('characterArt').src = 'aimesi-' + emotion + '.png';
+  $('sideArt').src = 'aimesi-' + emotion + '.png';
+  $('reactionIcon').textContent = icon;
+  
+  $('stage').textContent = reactionStage;
+  $('speaker').textContent = '愛彌斯';
+  $('line').textContent = reactionLine;
+  
+  $('prompt').textContent = '愛彌斯的反應';
+  $('choices').innerHTML = '';
+  $('next').classList.remove('hidden');
+  $('next').textContent = index < chapters.length - 1 ? '前往下一章 →' : '查看結局 →';
+  
+  $('next').onclick = () => {
+    if (index < chapters.length - 1) {
+      index++;
+      showChapter();
+    } else {
+      finish();
+    }
+  };
+}
+
+function finish() {
+  let e;
+  if (anger >= 4) {
+    e = {
+      icon: '💔',
+      title: '最後的空白譜頁',
+      text: '幾次冷淡的回應讓愛彌斯不再向你求助。校園祭演出仍然完成了，但那首歌沒有唱給你聽。散場後，她把譜頁收進資料夾，你們回到了普通同學的距離。',
+      line: '「謝謝你曾經幫忙。之後……我們就先到這裡吧。」'
+    };
+  } else if (love >= 8 && trust >= 5) {
+    e = {
+      icon: '💖',
+      title: '星光下的告白',
+      text: '愛彌斯笑著點頭。她告訴你，那首歌記錄了從音樂教室到天台的每一段回憶。你們約好明天一起上學，讓這段故事繼續寫下去。',
+      line: '「明天早上，等我一起走吧。」'
+    };
+  } else if (trust >= 7) {
+    e = {
+      icon: '🎶',
+      title: '我們的社團',
+      text: '你們沒有急著替關係命名，卻成了彼此最可靠的朋友。音樂社順利留下來，大家也約好下次一起出遊。',
+      line: '「有你們在，這首歌才完整。」'
+    };
+  } else if (trust >= 3 || love >= 4) {
+    e = {
+      icon: '🌱',
+      title: '新的旋律',
+      text: '校園祭順利落幕。愛彌斯帶著你的鼓勵繼續往前，而你們也各自找到新的方向。那些一起練習的午後，成了珍貴的回憶。',
+      line: '「下次有空，再一起聽歌吧。」'
+    };
+  } else {
+    e = {
+      icon: '🌙',
+      title: '散場以後',
+      text: '演出結束，人群漸漸散去。你們把想說的話留在了心裡。幾天後，音樂教室的桌上多了一張寫著謝謝的便條。',
+      line: '「那天你來過，我一直記得。」'
+    };
+  }
+  
+  $('game').classList.add('hidden');
+  $('ending').classList.remove('hidden');
+  $('endIcon').textContent = e.icon;
+  $('endTitle').textContent = e.title;
+  $('endText').textContent = e.text;
+  $('endLine').textContent = e.line;
+}
+
+$('begin').onclick = () => {
+  $('start').classList.add('hidden');
+  $('ending').classList.add('hidden');
+  $('game').classList.remove('hidden');
+  index = 0; trust = 0; love = 0; anger = 0;
+  showChapter();
+};
+
+$('restart').onclick = () => $('begin').click();
+</script>
+</body>
+</html>
