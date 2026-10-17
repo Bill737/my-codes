@@ -160,6 +160,50 @@ body {
 .anger-pill b { color: #b4434d; }
 .anger-pill.is-angry { background: #ffe8e5; border-color: #eaa8a3; box-shadow: 0 3px 12px rgba(190, 67, 77, 0.12); }
 
+.ending-progress {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin: 14px 0 18px;
+}
+.progress-item {
+  min-width: 0;
+  padding: 11px 13px 12px;
+  border: 1px solid #efe6e4;
+  border-radius: 15px;
+  background: rgba(255,255,255,.9);
+  box-shadow: 0 4px 14px rgba(36,48,74,.05);
+}
+.progress-heading, .progress-caption {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.progress-heading { color: #50566b; font-size: 12px; font-weight: 800; }
+.progress-value { color: #72778a; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.progress-track {
+  height: 8px;
+  margin: 8px 0 7px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #eeeef2;
+}
+.progress-fill {
+  width: 0;
+  height: 100%;
+  border-radius: inherit;
+  transition: width .45s ease, background-color .25s ease;
+}
+.progress-love .progress-fill { background: linear-gradient(90deg, #ed8fb0, #d65882); }
+.progress-trust .progress-fill { background: linear-gradient(90deg, #8dcdbd, #4f9d8b); }
+.progress-anger .progress-fill { background: linear-gradient(90deg, #e7b17d, #c64c56); }
+.progress-caption { color: #858899; font-size: 11px; line-height: 1.35; }
+.progress-status { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.progress-status.is-ready { color: #458774; font-weight: 800; }
+.progress-status.is-danger { color: #b4434d; font-weight: 800; }
+.progress-item.is-danger { border-color: #e9b1ad; background: #fff8f6; }
+
 .scene-title {
   margin-top: 20px;
   color: #927e79;
@@ -476,6 +520,8 @@ body {
   .top { align-items: flex-start; }
   .stats { flex-wrap: wrap; justify-content: flex-end; gap: 6px; }
   .pill { padding: 7px 9px; font-size: 11px; }
+  .ending-progress { gap: 7px; }
+  .progress-item { padding: 10px; }
   .visual { height: clamp(195px, 36vh, 270px); margin-bottom: 14px; }
   .character { width: min(42vw, 190px); height: 100%; right: 2%; bottom: -5px; }
   .character img { height: 100%; max-width: 100%; }
@@ -491,6 +537,9 @@ body {
   .main { padding: 18px 12px 24px; }
   .top { display: grid; grid-template-columns: 1fr; gap: 10px; }
   .stats { justify-content: flex-start; }
+  .ending-progress { grid-template-columns: 1fr; gap: 7px; margin: 10px 0 14px; }
+  .progress-item { padding: 9px 11px; }
+  .progress-track { margin: 6px 0; }
   .visual { height: 210px; }
   .character { width: 55%; max-width: 190px; }
   .stage { font-size: 21px; }
@@ -532,6 +581,24 @@ body {
           <div class="pill anger-pill">😠 怒氣 <b id="anger">0</b></div>
         </div>
       </div>
+
+      <section class="ending-progress" aria-label="結局進度">
+        <div class="progress-item progress-love">
+          <div class="progress-heading"><span>💗 戀愛結局</span><span class="progress-value" id="loveProgressText">0 / 8</span></div>
+          <div class="progress-track" role="progressbar" aria-label="戀愛結局進度" aria-valuemin="0" aria-valuemax="8" aria-valuenow="0"><div class="progress-fill" id="loveProgress"></div></div>
+          <div class="progress-caption"><span class="progress-status" id="loveStatus">還需 8 點心動</span></div>
+        </div>
+        <div class="progress-item progress-trust">
+          <div class="progress-heading"><span>🤝 友情結局</span><span class="progress-value" id="trustProgressText">0 / 7</span></div>
+          <div class="progress-track" role="progressbar" aria-label="友情結局進度" aria-valuemin="0" aria-valuemax="7" aria-valuenow="0"><div class="progress-fill" id="trustProgress"></div></div>
+          <div class="progress-caption"><span class="progress-status" id="trustStatus">還需 7 點信任</span></div>
+        </div>
+        <div class="progress-item progress-anger">
+          <div class="progress-heading"><span>😠 壞結局風險</span><span class="progress-value" id="angerProgressText">0 / 4</span></div>
+          <div class="progress-track" role="progressbar" aria-label="壞結局風險" aria-valuemin="0" aria-valuemax="4" aria-valuenow="0"><div class="progress-fill" id="angerProgress"></div></div>
+          <div class="progress-caption"><span class="progress-status" id="angerStatus">距離壞結局還有 4 點怒氣</span></div>
+        </div>
+      </section>
 
       <div class="scene-title" id="scene">放學後 · 音樂教室</div>
       <div class="stage" id="stage">夕陽落在散開的樂譜上。</div>
@@ -616,6 +683,37 @@ function updateStats() {
   $('love').textContent = love;
   $('anger').textContent = anger;
   $('anger').closest('.pill').classList.toggle('is-angry', anger >= 3);
+
+  const romanceReady = anger < 4 && love >= 8 && trust >= 5;
+  const friendshipReady = anger < 4 && !romanceReady && trust >= 7;
+  const updateProgress = (key, value, max, status, state = '') => {
+    const current = Math.min(value, max);
+    const track = $(''+key+'Progress').parentElement;
+    $(''+key+'Progress').style.width = `${(current / max) * 100}%`;
+    track.setAttribute('aria-valuenow', current);
+    $(''+key+'ProgressText').textContent = `${current} / ${max}`;
+    const statusEl = $(''+key+'Status');
+    statusEl.textContent = status;
+    statusEl.classList.toggle('is-ready', state === 'ready');
+    statusEl.classList.toggle('is-danger', state === 'danger');
+    statusEl.closest('.progress-item').classList.toggle('is-danger', state === 'danger');
+  };
+
+  const loveStatus = romanceReady ? '戀愛好結局條件達成' :
+    anger >= 4 ? '怒氣過高，暫不能進入好結局' :
+    love >= 8 && trust < 5 ? `心動已達標，還需 ${5 - trust} 點信任` :
+    `還需 ${Math.max(0, 8 - love)} 點心動`;
+  const trustStatus = romanceReady ? '已達戀愛結局所需信任' :
+    friendshipReady ? '友情好結局條件達成' :
+    anger >= 4 ? '怒氣過高，暫不能進入好結局' :
+    `還需 ${Math.max(0, 7 - trust)} 點信任`;
+  const angerStatus = anger >= 4 ? '壞結局已觸發' :
+    anger >= 3 ? '危險！再累積 1 點會進入壞結局' :
+    `距離壞結局還有 ${4 - anger} 點怒氣`;
+
+  updateProgress('love', love, 8, loveStatus, romanceReady ? 'ready' : anger >= 4 ? 'danger' : '');
+  updateProgress('trust', trust, 7, trustStatus, romanceReady || friendshipReady ? 'ready' : anger >= 4 ? 'danger' : '');
+  updateProgress('anger', anger, 4, angerStatus, anger >= 4 ? 'danger' : '');
 }
 
 function resolveEmotion(chapterIndex, type) {
